@@ -1,6 +1,7 @@
 import type { Action, GameState } from "./types";
 import { createEnemy, createPlayers, nextPlayerId } from "./scenario";
 import { allPlayersChoseIntro } from "./uiText";
+import pixelArt from "../assets/pixel-art-bar.png";
 
 function rollD20(): number {
   return Math.floor(Math.random() * 20) + 1; // 1..20
@@ -14,8 +15,7 @@ export function createInitialState(): GameState {
   return {
     phase: "intro",
     environmentTitle: "Driftwood Mug (Stormy Night)",
-    environmentImageUrl:
-      "https://images.unsplash.com/photo-1528823872057-9c018a7a7553?auto=format&fit=crop&w=1200&q=60",
+    environmentImageUrl: pixelArt,
 
     players: createPlayers(),
     activePlayer: "p1",
