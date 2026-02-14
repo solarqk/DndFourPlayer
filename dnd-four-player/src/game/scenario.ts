@@ -77,7 +77,7 @@ export function createPlayers(): Record<PlayerId, Player> {
       id: "p4",
       name: "Player 4",
       currentHP: 3,
-      maxHP: 10,
+      maxHP: 3,
       armorClass: 10,
     },
   };
