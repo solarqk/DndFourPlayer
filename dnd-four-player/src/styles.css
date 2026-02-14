@@ -148,8 +148,8 @@ html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text);
   grid-template-rows: repeat(2, 1fr);
   gap: 10px;
 
-  height: 100%;       /* important */
-  min-height: 0;      /* critical for proper sizing */
+  height: 100%;
+  min-height: 0;      
 }
 
 /* Each player card */
@@ -161,8 +161,8 @@ html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text);
   border: 2px solid var(--border);
   border-radius: 10px;
 
-  height: 100%;       /* important */
-  min-height: 0;      /* critical */
+  height: 100%; 
+  min-height: 0;
 }
 .playerCardActive {
   border-color: var(--accent);
