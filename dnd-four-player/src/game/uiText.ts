@@ -49,6 +49,21 @@ export function combatNarration(state: GameState): string {
     `It is ${state.players[state.activePlayer].name}'s turn.`,
   ];
 
+  if (state.lastEnemyRoll) {
+    const target = state.players[state.lastEnemyRoll.targetId];
+
+    if (target) {
+      lines.push(
+        "",
+        `Enemy targeted ${target.name}: rolled ${state.lastEnemyRoll.d20} vs AC ${target.armorClass} → ${
+          state.lastEnemyRoll.hit ? "HIT (-1 HP)" : "MISS"
+        }`,
+      );
+    } else {
+      lines.push("", `Enemy attack occurred (target unavailable).`);
+    }
+  }
+
   if (lr) {
     lines.push(
       "",

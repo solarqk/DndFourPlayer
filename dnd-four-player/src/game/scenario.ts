@@ -28,10 +28,34 @@ export const introChoices: IntroChoice[] = [
 
 export function createPlayers(): Record<PlayerId, Player> {
   return {
-    p1: { id: "p1", name: "Player 1", hpDisplay: 12 },
-    p2: { id: "p2", name: "Player 2", hpDisplay: 11 },
-    p3: { id: "p3", name: "Player 3", hpDisplay: 10 },
-    p4: { id: "p4", name: "Player 4", hpDisplay: 13 },
+    p1: {
+      id: "p1",
+      name: "Player 1",
+      currentHP: 3,
+      maxHP: 3,
+      armorClass: 9,
+    },
+    p2: {
+      id: "p2",
+      name: "Player 2",
+      currentHP: 2,
+      maxHP: 2,
+      armorClass: 10,
+    },
+    p3: {
+      id: "p3",
+      name: "Player 3",
+      currentHP: 1,
+      maxHP: 1,
+      armorClass: 6,
+    },
+    p4: {
+      id: "p4",
+      name: "Player 4",
+      currentHP: 10,
+      maxHP: 10,
+      armorClass: 10,
+    },
   };
 }
 
@@ -39,7 +63,8 @@ export function createEnemy(): Enemy {
   return {
     name: "Alley Bruiser",
     hitsRemaining: 5,
-    armorClass: 12, // d20 >= 12 hits
+    armorClass: 10,
+    toHit: 0,
   };
 }
 

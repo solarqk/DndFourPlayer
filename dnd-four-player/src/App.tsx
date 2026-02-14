@@ -23,7 +23,9 @@ function PlayerCard({ state, playerId, title, dispatch }: PlayerCardProps) {
       </div>
       <div className="statRow">
         <span className="statLabel">HP</span>
-        <span className="statValue">{player.hpDisplay}</span>
+        <span className="statValue">
+          {player.currentHP} / {player.maxHP}
+        </span>
       </div>
       <div className="statRow">
         <span className="statLabel">Turn</span>
@@ -63,7 +65,10 @@ function PlayerCard({ state, playerId, title, dispatch }: PlayerCardProps) {
       </>
     );
   } else if (state.phase === "combat") {
+    const isDown = player.currentHP <= 0;
+
     const disabled =
+      isDown ||
       !isActive ||
       state.enemy.hitsRemaining <= 0 ||
       state.attackedThisCombat[playerId];
@@ -111,17 +116,7 @@ function PlayerCard({ state, playerId, title, dispatch }: PlayerCardProps) {
     content = (
       <>
         <div className="panelTitle">{title}</div>
-        <div className="hint">Wrap-up.</div>
-        <div className="btnRow">
-          <button className="btn" onClick={() => dispatch({ type: "RESET" })}>
-            Restart
-          </button>
-          <button
-            className="btn btnPrimary"
-            onClick={() => dispatch({ type: "OUTRO_ADVANCE" })}>
-            Finish
-          </button>
-        </div>
+        <div className="hint">Wrap-up in progress.</div>
       </>
     );
   } else if (state.phase === "done") {
@@ -129,11 +124,6 @@ function PlayerCard({ state, playerId, title, dispatch }: PlayerCardProps) {
       <>
         <div className="panelTitle">{title}</div>
         <div className="hint">Scenario complete.</div>
-        <button
-          className="btn btnPrimary"
-          onClick={() => dispatch({ type: "RESET" })}>
-          Play again
-        </button>
       </>
     );
   }
@@ -155,7 +145,19 @@ export default function App() {
     if (state.phase === "intro") return introNarration(state);
     if (state.phase === "combat") return combatNarration(state);
     if (state.phase === "outro") return outroNarration(state);
-    if (state.phase === "done") return "The session ends. The storm moves on.";
+
+    if (state.phase === "done") {
+      const headline =
+        state.endResult === "defeat"
+          ? "DEFEAT"
+          : state.endResult === "victory"
+            ? "VICTORY"
+            : "DONE";
+
+      const end = state.endMessage ?? "Scenario complete.";
+      return `${headline}: ${end}\n\nThe session ends. The storm moves on.`;
+    }
+
     return "";
   }, [state]);
 
@@ -202,6 +204,14 @@ export default function App() {
                 className="btn"
                 onClick={() => dispatch({ type: "OUTRO_ADVANCE" })}>
                 End scenario
+              </button>
+            )}
+
+            {state.phase === "done" && (
+              <button
+                className="btn btnPrimary"
+                onClick={() => dispatch({ type: "RESET" })}>
+                Play Again
               </button>
             )}
 

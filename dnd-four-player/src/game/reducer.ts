@@ -1,5 +1,5 @@
 import type { Action, GameState, PlayerId } from "./types";
-import { createEnemy, createPlayers, nextPlayerId } from "./scenario";
+import { createEnemy, createPlayers } from "./scenario"; // nextPlayerId
 import { allPlayersChoseIntro } from "./uiText";
 import pixelArt from "../assets/pixel-art-bar.png";
 
@@ -7,8 +7,24 @@ function rollD20(): number {
   return Math.floor(Math.random() * 20) + 1; // 1..20
 }
 
+function pickEnemyTarget(state: GameState): PlayerId | null {
+  const livingPlayers = (Object.keys(state.players) as PlayerId[]).filter(
+    (id) => state.players[id].currentHP > 0,
+  );
+  if (livingPlayers.length === 0) return null;
+
+  const randomIndex = Math.floor(Math.random() * livingPlayers.length);
+  return livingPlayers[randomIndex];
+}
+
 function pushLog(state: GameState, line: string): GameState {
   return { ...state, log: [line, ...state.log].slice(0, 50) };
+}
+
+function allPlayersDown(state: GameState): boolean {
+  return (Object.keys(state.players) as PlayerId[]).every(
+    (id) => state.players[id].currentHP <= 0,
+  );
 }
 
 export function createInitialState(): GameState {
@@ -25,6 +41,7 @@ export function createInitialState(): GameState {
     flags: { introChoicesByPlayer: {} },
 
     attackedThisCombat: {},
+    endMessage: undefined,
 
     log: [
       "Scenario loaded: Bar intro → quick fight → wrap-up.",
@@ -96,12 +113,18 @@ export function reducer(state: GameState, action: Action): GameState {
     case "COMBAT_ATTACK": {
       if (state.phase !== "combat") return state;
       if (state.enemy.hitsRemaining <= 0) return state;
+
       if (action.playerId !== state.activePlayer) {
         return pushLog(state, "Not your turn.");
       }
 
+      const actor = state.players[action.playerId];
+      if (actor.currentHP <= 0) {
+        return pushLog(state, `${actor.name} is at 0 HP and can't attack.`);
+      }
+
       if (state.attackedThisCombat[action.playerId]) {
-        return pushLog(state, "You already used your attack this combat.");
+        return pushLog(state, "You already used your attack this round.");
       }
 
       const d20 = rollD20();
@@ -153,19 +176,69 @@ export function reducer(state: GameState, action: Action): GameState {
 
       // If last player in round
       if (currentIndex === order.length - 1) {
-        // Reset round attacks
-        return pushLog(
-          {
-            ...state,
-            activePlayer: "p1",
-            attackedThisCombat: {}, // RESET HERE
-          },
-          "New round begins!",
-        );
-      }
+        // Enemy attacks once at end of round
+        const targetId = pickEnemyTarget(state);
 
+        if (!targetId || !state.players[targetId]) {
+          // No valid target exists → everyone is dead
+          const msg = "All heroes are down. Defeat.";
+          let s: GameState = {
+            ...state,
+            phase: "done",
+            endResult: "defeat",
+            endMessage: msg,
+          };
+          s = pushLog(s, msg);
+          return s;
+        }
+
+        const target = state.players[targetId];
+
+        const d20 = rollD20();
+        const hit = d20 >= target.armorClass;
+
+        const updatedPlayers = {
+          ...state.players,
+          [targetId]: {
+            ...target,
+            currentHP: hit
+              ? Math.max(0, target.currentHP - 1)
+              : target.currentHP,
+          },
+        };
+
+        let s: GameState = {
+          ...state,
+          players: updatedPlayers,
+          activePlayer: "p1",
+          attackedThisCombat: {}, // reset attacks for new round
+          lastEnemyRoll: { d20, targetId, hit },
+        };
+
+        // Log the enemy attack FIRST
+        s = pushLog(
+          s,
+          `Enemy attacks ${target?.name ?? targetId}: rolled ${d20} vs AC ${target?.armorClass ?? "?"} → ${
+            hit ? "HIT (-1 HP)" : "MISS"
+          }`,
+        );
+
+        // Then check defeat
+        if (allPlayersDown(s)) {
+          const msg = "All heroes are down. Defeat.";
+          s = pushLog(s, msg);
+          return { ...s, phase: "done", endResult: "defeat", endMessage: msg };
+        }
+
+        s = pushLog(s, "New round begins!");
+        return s;
+      }
       // Otherwise just move to next player
       const next = order[currentIndex + 1];
+
+      if (!next || !state.players[next]) {
+        return state; // safety guard — do nothing
+      }
 
       return pushLog(
         {
@@ -177,17 +250,35 @@ export function reducer(state: GameState, action: Action): GameState {
     }
 
     case "OUTRO_ADVANCE": {
+      if (state.phase === "combat" && allPlayersDown(state)) {
+        const msg = "All heroes are down. Defeat.";
+        return pushLog(
+          { ...state, phase: "done", endResult: "defeat", endMessage: msg },
+          "You cannot continue—everyone is down.",
+        );
+      }
       if (state.phase === "combat") {
         if (state.enemy.hitsRemaining > 0) {
           return pushLog(state, "Cannot wrap up yet: enemy still standing.");
         }
+
+        const msg = `Victory! ${state.enemy.name} is down, and the room exhales.`;
         return pushLog(
-          { ...state, phase: "outro" },
+          { ...state, phase: "outro", endResult: "victory", endMessage: msg },
           "Combat complete. Entering wrap-up.",
         );
       }
       if (state.phase === "outro") {
-        return pushLog({ ...state, phase: "done" }, "Scenario complete.");
+        const msg = state.endMessage ?? "Victory! The threat is dealt with.";
+        return pushLog(
+          {
+            ...state,
+            phase: "done",
+            endResult: state.endResult ?? "victory",
+            endMessage: msg,
+          },
+          "Scenario complete.",
+        );
       }
       return state;
     }
