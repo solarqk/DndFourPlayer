@@ -1,0 +1,230 @@
+:root {
+  --bg: #0b0c10;
+  --panel: #13151b;
+  --panel2: #101218;
+  --border: #2a2e3a;
+  --text: #e7e9ee;
+  --muted: #aab0c0;
+  --accent: #7aa2ff;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto; }
+
+.btn {
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  color: var(--text);
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.btn:hover { border-color: rgba(122,162,255,0.45); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btnPrimary {
+  border-color: rgba(122,162,255,0.65);
+  box-shadow: 0 0 0 1px rgba(122,162,255,0.15) inset;
+}
+
+.paneHeader {
+  padding: 8px 10px;
+  font-size: 13px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--panel2);
+}
+
+.narrativeText {
+  margin: 0;
+  padding: 10px;
+  white-space: pre-wrap;
+  line-height: 1.25rem;
+  font-size: 14px;
+
+  overflow: auto;     /* scrolling */
+  min-height: 0;      /* critical inside grid */
+}
+
+.narrativeActions {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.appShell2 {
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 280px 1fr; /* bigger narration row */
+  gap: 10px;
+  padding: 10px;
+}
+
+.topStrip {
+  display: grid;
+  grid-template-columns: 230px 1fr 260px; /* image | narration | enemy slot */
+  gap: 10px;
+  min-height: 170px;
+}
+
+/* Small environment card */
+.envCardSmall {
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+
+.envImageWrapSmall {
+  background: #000;
+  overflow: hidden;
+}
+.envImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.envTitleSmall {
+  padding: 8px 10px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Narration card */
+.narrationCard {
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 0;
+}
+
+/* Enemy slot (empty until combat) */
+.enemySlot {
+  min-height: 0;
+}
+.enemyCard,
+.enemyCardPlaceholder {
+  height: 100%;
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.enemyCardPlaceholder {
+  background: rgba(255,255,255,0.02);
+}
+
+.enemyName {
+  padding: 10px;
+  font-size: 18px;
+  font-weight: 700;
+}
+.enemyStat {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.enemyHint {
+  padding: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* The 2x2 player grid */
+.playersGrid2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+
+  height: 100%;       /* important */
+  min-height: 0;      /* critical for proper sizing */
+
+/* Each player card */
+.playerCard {
+  display: flex;
+  flex-direction: column;
+
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+
+  height: 100%;       /* important */
+  min-height: 0;      /* critical */
+}
+.playerCardActive {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(122,162,255,0.25);
+}
+
+.playerCardBody {
+  height: 100%;
+  display: flex;
+  min-height: 0;
+}
+
+.playerSidebar {
+  width: 120px;
+  background: var(--panel2);
+  border-right: 1px solid var(--border);
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.playerContent {
+  flex: 1;
+  padding: 10px;
+  overflow: auto;
+  min-height: 0;
+}
+
+.panelTitle {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.hint {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.btnGrid {
+  display: grid;
+  gap: 8px;
+}
+.btnRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btnLabel { font-weight: 700; }
+.btnSub {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.1rem;
+}
+
+.statRow { display: grid; gap: 2px; }
+.statLabel { font-size: 12px; color: var(--muted); }
+.statValue { font-size: 13px; }
+.statValue.active { color: var(--accent); font-weight: 700; }
+
+.smallText {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
