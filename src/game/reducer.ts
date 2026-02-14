@@ -1,5 +1,5 @@
 import type { Action, GameState, PlayerId } from "./types";
-import { createEnemy, createInitialState, createPlayers } from "./scenario"; // nextPlayerId
+import { createInitialState } from "./scenario"; // createEnemy, nextPlayerId, createPlayers
 import { allPlayersChoseIntro } from "./uiText";
 
 function rollD20(): number {
@@ -77,12 +77,12 @@ export function reducer(state: GameState, action: Action): GameState {
           "Cannot advance: not all players chose an intro action.",
         );
       }
-      const s: GameState = {
-        ...state,
-        phase: "combat",
-        activePlayer: "p1",
-        lastRoll: undefined,
-      };
+      // const s: GameState = {
+      //   ...state,
+      //   phase: "combat",
+      //   activePlayer: "p1",
+      //   lastRoll: undefined,
+      // };
       return pushLog(
         {
           ...state,
