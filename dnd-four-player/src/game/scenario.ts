@@ -27,24 +27,24 @@ export function createInitialState(): GameState {
 export const introChoices: IntroChoice[] = [
   {
     key: "buy_round",
-    label: "Buy a round 🍺",
+    label: "Buy a round",
     description:
       "You loosen tongues and earn goodwill. Might help after the fight.",
   },
   {
     key: "chat_bartender",
-    label: "Chat up the bartender 🗣️",
+    label: "Chat up the bartender",
     description: "You gather local rumors and maybe a useful detail for later.",
   },
   {
     key: "intimidate_patron",
-    label: "Intimidate a shady patron 😠",
+    label: "Intimidate a shady patron",
     description:
       "You push for answers fast—could provoke trouble, could reveal fear.",
   },
   {
     key: "inspect_noticeboard",
-    label: "Inspect the noticeboard 📜",
+    label: "Inspect the noticeboard",
     description:
       "You scan posted jobs and warnings. Might reveal what’s coming.",
   },
@@ -76,7 +76,7 @@ export function createPlayers(): Record<PlayerId, Player> {
     p4: {
       id: "p4",
       name: "Player 4",
-      currentHP: 10,
+      currentHP: 3,
       maxHP: 10,
       armorClass: 10,
     },
@@ -87,7 +87,7 @@ export function createEnemy(): Enemy {
   return {
     name: "Alley Bruiser",
     hitsRemaining: 5,
-    armorClass: 10,
+    armorClass: 12,
     toHit: 0,
   };
 }

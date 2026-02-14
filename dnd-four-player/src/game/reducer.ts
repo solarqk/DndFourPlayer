@@ -26,6 +26,11 @@ function allPlayersDown(state: GameState): boolean {
   );
 }
 
+function computeDamage(d20: number, hit: boolean): number {
+  if (!hit) return 0;
+  return d20 === 20 ? 2 : 1;
+}
+
 export function reducer(state: GameState, action: Action): GameState {
   switch (action.type) {
     case "RESET":
@@ -60,6 +65,10 @@ export function reducer(state: GameState, action: Action): GameState {
       return s;
     }
 
+    /**
+     * Advance from intro to combat, or from combat to outro, or from outro to done.
+     * Each step has checks to ensure valid state transitions.
+     */
     case "INTRO_ADVANCE": {
       if (state.phase !== "intro") return state;
       if (!allPlayersChoseIntro(state)) {
@@ -93,24 +102,27 @@ export function reducer(state: GameState, action: Action): GameState {
       if (action.playerId !== state.activePlayer) {
         return pushLog(state, "Not your turn.");
       }
-
+      // Check if player is alive
       const actor = state.players[action.playerId];
       if (actor.currentHP <= 0) {
         return pushLog(state, `${actor.name} is at 0 HP and can't attack.`);
       }
-
+      // Check if player already attacked this round
       if (state.attackedThisCombat[action.playerId]) {
         return pushLog(state, "You already used your attack this round.");
       }
 
+      /**
+       * Player attack logic:
+       * - Roll d20, compare to enemy AC for hit/miss
+       * - If hit, deal damage (1 HP, or 2 HP on nat 20)
+       * - Update enemy HP and log the attack
+       */
       const d20 = rollD20();
       const hit = d20 >= state.enemy.armorClass;
 
-      let hitsRemaining = state.enemy.hitsRemaining;
-      if (hit) {
-        const dmgHits = d20 === 20 ? 2 : 1; // nat 20 = 2 hits
-        hitsRemaining = Math.max(0, hitsRemaining - dmgHits);
-      }
+      const damage = computeDamage(d20, hit);
+      const hitsRemaining = Math.max(0, state.enemy.hitsRemaining - damage);
 
       let s: GameState = {
         ...state,
@@ -122,11 +134,12 @@ export function reducer(state: GameState, action: Action): GameState {
         },
       };
 
-      const hitText = hit
-        ? d20 === 20
+      const hitText =
+        damage === 2
           ? "NAT 20! HIT (-2 enemy hits)"
-          : "HIT (-1 enemy hit)"
-        : "MISS";
+          : damage === 1
+            ? "HIT (-1 enemy hit)"
+            : "MISS";
 
       s = pushLog(
         s,
@@ -146,7 +159,7 @@ export function reducer(state: GameState, action: Action): GameState {
       if (state.enemy.hitsRemaining <= 0) {
         return state;
       }
-
+      // Define turn order
       const order: PlayerId[] = ["p1", "p2", "p3", "p4"];
       const currentIndex = order.indexOf(state.activePlayer);
 
@@ -155,9 +168,11 @@ export function reducer(state: GameState, action: Action): GameState {
         // Enemy attacks once at end of round
         const targetId = pickEnemyTarget(state);
 
+        // If no valid target, all players are down → defeat
         if (!targetId || !state.players[targetId]) {
           // No valid target exists → everyone is dead
           const msg = "All heroes are down. Defeat.";
+          //
           let s: GameState = {
             ...state,
             phase: "done",
@@ -168,18 +183,24 @@ export function reducer(state: GameState, action: Action): GameState {
           return s;
         }
 
+        /**
+         * Enemy attack logic:
+         * - Pick random living player as target
+         * - Roll d20, compare to target AC for hit/miss
+         * - If hit, deal damage (1 HP, or 2 HP on nat 20)
+         * - Update player HP and log the attack
+         */
         const target = state.players[targetId];
 
         const d20 = rollD20();
         const hit = d20 >= target.armorClass;
+        const damage = computeDamage(d20, hit);
 
         const updatedPlayers = {
           ...state.players,
           [targetId]: {
             ...target,
-            currentHP: hit
-              ? Math.max(0, target.currentHP - 1)
-              : target.currentHP,
+            currentHP: Math.max(0, target.currentHP - damage),
           },
         };
 
@@ -192,11 +213,18 @@ export function reducer(state: GameState, action: Action): GameState {
         };
 
         // Log the enemy attack FIRST
+        const hitText =
+          damage === 2
+            ? "NAT 20! HIT (-2 HP)"
+            : damage === 1
+              ? "HIT (-1 HP)"
+              : "MISS";
+
         s = pushLog(
           s,
-          `Enemy attacks ${target?.name ?? targetId}: rolled ${d20} vs AC ${target?.armorClass ?? "?"} → ${
-            hit ? "HIT (-1 HP)" : "MISS"
-          }`,
+          `Enemy attacks ${target?.name ?? targetId}: rolled ${d20} vs AC ${
+            target?.armorClass ?? "?"
+          } → ${hitText}`,
         );
 
         // Then check defeat
@@ -226,6 +254,7 @@ export function reducer(state: GameState, action: Action): GameState {
     }
 
     case "OUTRO_ADVANCE": {
+      // Allow advancing from combat to outro, or from outro to done
       if (state.phase === "combat" && allPlayersDown(state)) {
         const msg = "All heroes are down. Defeat.";
         return pushLog(
