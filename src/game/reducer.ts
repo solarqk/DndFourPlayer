@@ -66,7 +66,7 @@ export function reducer(state: GameState, action: Action): GameState {
     }
 
     /**
-     * Advance from intro to combat, or from combat to outro, or from outro to done.
+     * Advance from intro to combat, or from combat to outro, or from outro to done. //
      * Each step has checks to ensure valid state transitions.
      */
     case "INTRO_ADVANCE": {
