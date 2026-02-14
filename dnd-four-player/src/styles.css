@@ -58,7 +58,7 @@ html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text);
 .appShell2 {
   height: 100vh;
   display: grid;
-  grid-template-rows: 180px 1fr;
+  grid-template-rows: 300px 1fr;
   gap: 10px;
   padding: 10px;
 }
@@ -228,4 +228,34 @@ html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text);
   margin-top: 10px;
   color: var(--muted);
   font-size: 13px;
+}
+
+.crit {
+  color: gold;
+  font-weight: 700;
+}
+
+/* Chrome / Edge / Safari */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #101218; /* matches panel2 */
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a2e3a; /* border color tone */
+  border-radius: 8px;
+  border: 2px solid #101218; /* creates inset effect */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3b4152;
+}
+
+::-webkit-scrollbar-corner {
+  background: #101218;
 }

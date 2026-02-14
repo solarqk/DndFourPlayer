@@ -63,7 +63,10 @@ function PlayerCard({ state, playerId, title, dispatch }: PlayerCardProps) {
       </>
     );
   } else if (state.phase === "combat") {
-    const disabled = !isActive || state.enemy.hitsRemaining <= 0;
+    const disabled =
+      !isActive ||
+      state.enemy.hitsRemaining <= 0 ||
+      state.attackedThisCombat[playerId];
     content = (
       <>
         <div className="panelTitle">{title}</div>
@@ -92,7 +95,13 @@ function PlayerCard({ state, playerId, title, dispatch }: PlayerCardProps) {
           {state.lastRoll?.playerId === playerId && (
             <>
               Last roll: {state.lastRoll.d20} →{" "}
-              {state.lastRoll.hit ? "HIT" : "MISS"}
+              {state.lastRoll.crit ? (
+                <span className="crit">NAT 20! HIT!</span>
+              ) : state.lastRoll.hit ? (
+                "HIT!"
+              ) : (
+                "MISS"
+              )}
             </>
           )}
         </div>
@@ -220,6 +229,9 @@ export default function App() {
               </div>
               <div className="enemyHint">
                 Each hit removes <b>1</b> from the counter.
+              </div>
+              <div className="enemyHint">
+                A natural 20 roll removes <b>2</b> from the counter.
               </div>
             </div>
           ) : (

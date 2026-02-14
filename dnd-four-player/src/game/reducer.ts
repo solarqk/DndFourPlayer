@@ -1,4 +1,4 @@
-import type { Action, GameState } from "./types";
+import type { Action, GameState, PlayerId } from "./types";
 import { createEnemy, createPlayers, nextPlayerId } from "./scenario";
 import { allPlayersChoseIntro } from "./uiText";
 import pixelArt from "../assets/pixel-art-bar.png";
@@ -23,6 +23,8 @@ export function createInitialState(): GameState {
     enemy: createEnemy(),
 
     flags: { introChoicesByPlayer: {} },
+
+    attackedThisCombat: {},
 
     log: [
       "Scenario loaded: Bar intro → quick fight → wrap-up.",
@@ -79,7 +81,16 @@ export function reducer(state: GameState, action: Action): GameState {
         activePlayer: "p1",
         lastRoll: undefined,
       };
-      return pushLog(s, "Intro complete. Combat begins!");
+      return pushLog(
+        {
+          ...state,
+          phase: "combat",
+          activePlayer: "p1",
+          lastRoll: undefined,
+          attackedThisCombat: {}, // RESET HERE
+        },
+        "Intro complete. Combat begins!",
+      );
     }
 
     case "COMBAT_ATTACK": {
@@ -89,23 +100,38 @@ export function reducer(state: GameState, action: Action): GameState {
         return pushLog(state, "Not your turn.");
       }
 
+      if (state.attackedThisCombat[action.playerId]) {
+        return pushLog(state, "You already used your attack this combat.");
+      }
+
       const d20 = rollD20();
       const hit = d20 >= state.enemy.armorClass;
 
       let hitsRemaining = state.enemy.hitsRemaining;
-      if (hit) hitsRemaining = Math.max(0, hitsRemaining - 1);
+      if (hit) {
+        const dmgHits = d20 === 20 ? 2 : 1; // nat 20 = 2 hits
+        hitsRemaining = Math.max(0, hitsRemaining - dmgHits);
+      }
 
       let s: GameState = {
         ...state,
         enemy: { ...state.enemy, hitsRemaining },
-        lastRoll: { playerId: action.playerId, d20, hit },
+        lastRoll: { playerId: action.playerId, d20, hit, crit: d20 === 20 },
+        attackedThisCombat: {
+          ...state.attackedThisCombat,
+          [action.playerId]: true, // mark as used
+        },
       };
+
+      const hitText = hit
+        ? d20 === 20
+          ? "NAT 20! HIT (-2 enemy hits)"
+          : "HIT (-1 enemy hit)"
+        : "MISS";
 
       s = pushLog(
         s,
-        `${state.players[action.playerId].name} attacks: rolled ${d20} → ${
-          hit ? "HIT (-1 enemy hit)" : "MISS"
-        }`,
+        `${state.players[action.playerId].name} attacks: rolled ${d20} → ${hitText}`,
       );
 
       if (hitsRemaining <= 0) {
@@ -117,13 +143,35 @@ export function reducer(state: GameState, action: Action): GameState {
 
     case "COMBAT_END_TURN": {
       if (state.phase !== "combat") return state;
+
       if (state.enemy.hitsRemaining <= 0) {
-        // allow ending combat by moving to outro via OUTRO_ADVANCE
         return state;
       }
-      const next = nextPlayerId(state.activePlayer);
+
+      const order: PlayerId[] = ["p1", "p2", "p3", "p4"];
+      const currentIndex = order.indexOf(state.activePlayer);
+
+      // If last player in round
+      if (currentIndex === order.length - 1) {
+        // Reset round attacks
+        return pushLog(
+          {
+            ...state,
+            activePlayer: "p1",
+            attackedThisCombat: {}, // RESET HERE
+          },
+          "New round begins!",
+        );
+      }
+
+      // Otherwise just move to next player
+      const next = order[currentIndex + 1];
+
       return pushLog(
-        { ...state, activePlayer: next },
+        {
+          ...state,
+          activePlayer: next,
+        },
         `Turn passes to ${state.players[next].name}.`,
       );
     }

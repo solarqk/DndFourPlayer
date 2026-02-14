@@ -35,6 +35,7 @@ export type CombatLastRoll = {
   playerId: PlayerId;
   d20: number;
   hit: boolean;
+  crit: boolean;
 };
 
 export type GameState = {
@@ -52,6 +53,8 @@ export type GameState = {
 
   // simple event log shown in narrative pane
   log: string[];
+
+  attackedThisCombat: Partial<Record<PlayerId, boolean>>;
 
   // combat feedback
   lastRoll?: CombatLastRoll;
