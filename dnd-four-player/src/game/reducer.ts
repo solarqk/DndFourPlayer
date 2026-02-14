@@ -1,7 +1,6 @@
 import type { Action, GameState, PlayerId } from "./types";
-import { createEnemy, createPlayers } from "./scenario"; // nextPlayerId
+import { createEnemy, createInitialState, createPlayers } from "./scenario"; // nextPlayerId
 import { allPlayersChoseIntro } from "./uiText";
-import pixelArt from "../assets/pixel-art-bar.png";
 
 function rollD20(): number {
   return Math.floor(Math.random() * 20) + 1; // 1..20
@@ -25,29 +24,6 @@ function allPlayersDown(state: GameState): boolean {
   return (Object.keys(state.players) as PlayerId[]).every(
     (id) => state.players[id].currentHP <= 0,
   );
-}
-
-export function createInitialState(): GameState {
-  return {
-    phase: "intro",
-    environmentTitle: "Driftwood Mug (Stormy Night)",
-    environmentImageUrl: pixelArt,
-
-    players: createPlayers(),
-    activePlayer: "p1",
-
-    enemy: createEnemy(),
-
-    flags: { introChoicesByPlayer: {} },
-
-    attackedThisCombat: {},
-    endMessage: undefined,
-
-    log: [
-      "Scenario loaded: Bar intro → quick fight → wrap-up.",
-      "Waiting for player choices…",
-    ],
-  };
 }
 
 export function reducer(state: GameState, action: Action): GameState {

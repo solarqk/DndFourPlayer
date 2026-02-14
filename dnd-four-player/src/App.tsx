@@ -1,6 +1,6 @@
 import React, { useMemo, useReducer } from "react";
-import { reducer, createInitialState } from "./game/reducer";
-import { introChoices } from "./game/scenario";
+import { reducer } from "./game/reducer";
+import { introChoices, createInitialState } from "./game/scenario";
 import type { GameState, PlayerId } from "./game/types";
 import { combatNarration, introNarration, outroNarration } from "./game/uiText";
 

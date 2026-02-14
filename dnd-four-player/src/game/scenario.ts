@@ -1,4 +1,28 @@
-import type { Enemy, IntroChoice, Player, PlayerId } from "./types";
+import type { Enemy, GameState, IntroChoice, Player, PlayerId } from "./types";
+import pixelArt from "../assets/pixel-art-bar.png";
+
+export function createInitialState(): GameState {
+  return {
+    phase: "intro",
+    environmentTitle: "Driftwood Mug (Stormy Night)",
+    environmentImageUrl: pixelArt,
+
+    players: createPlayers(),
+    activePlayer: "p1",
+
+    enemy: createEnemy(),
+
+    flags: { introChoicesByPlayer: {} },
+
+    attackedThisCombat: {},
+    endMessage: undefined,
+
+    log: [
+      "Scenario loaded: Bar intro → quick fight → wrap-up.",
+      "Waiting for player choices…",
+    ],
+  };
+}
 
 export const introChoices: IntroChoice[] = [
   {
