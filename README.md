@@ -1,73 +1,25 @@
-# React + TypeScript + Vite
+# D&D 4 Player Turn Based Simulator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Lightweight 4 player turn based simulator built with React + T, each person selects an option at the beginning of the the game that will have unique dialogue corresponding at the end. The narration card at the top tells the story and provides relevant information.
 
-Currently, two official plugins are available:
+### Gameplay Features
+* 4 player turn-based combat
+* Nat 20 critical hits
+* Round-based attack refresh
+* Victory and defeat states
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Game Phases
+Intro --> Combat --> Outro --> Done
 
-## React Compiler
+### Combat Loop
+Player 1 --> Player 2 --> Player 3 --> Player 4 --> Enemy Attack --> Reset Round --> Repeat
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Instructions
+ * Each player selects an intro actions in their respective cards, reflected by the Current choices in the narration card at the top. Once everyone selects an options, select "Advance to combat".
+ * Player 1 starts first by selecting Attack (d20). A dice is rolled and if the number exceeds the enemy's armor class, shown in the enemy card in the top right, a hit is landed. The player will then hit "End turn" to start the next player.
+   * Note: if a player reaches 0 HP, then they won't be able to attack anymore, but they will still need to select "End turn"
+ * Cycle through each players turn until either the characters defeat the enemy, or the enemy defeats the party. Then select "Advance to wrap-up"
+   * Note: this can take a few rounds depending on the RNG of the rolls. In testing, I typically see completion rates in 2-5 total turns
+ * After the combat phase is over, the narration card at the top will reflect choices made in the intro and wrap up the encounter. Then select "End scenario" to end the game.
+   
