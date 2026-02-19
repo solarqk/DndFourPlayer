@@ -7,7 +7,8 @@
     "dev": "vite --host 127.0.0.1 --port 5173",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:k8s": "tsc -b && vite build --config vite.k8s.config.ts"
   },
   "dependencies": {
     "react": "^19.2.0",
