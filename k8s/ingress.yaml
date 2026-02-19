@@ -14,4 +14,4 @@ spec:
               service:
                 name: dndfourplayer-svc
                 port:
-                  number: 80
+                  number: 8080

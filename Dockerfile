@@ -1,24 +1,26 @@
 # --- Build stage ---
 FROM node:20-alpine AS build
 WORKDIR /app
+
 COPY package*.json ./
 RUN npm ci
+
 COPY . .
 RUN npm run build:k8s
 
-# --- Serve stage ---
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
+# --- Runtime stage (Node/Express on 8080) ---
+FROM node:20-alpine
+WORKDIR /app
 
-# SPA-friendly
-RUN printf 'server {\n\
-    listen 80;\n\
-    server_name _;\n\
-    root /usr/share/nginx/html;\n\
-    index index.html;\n\
-    location / {\n\
-    try_files $uri $uri/ /index.html;\n\
-    }\n\
-    }\n' > /etc/nginx/conf.d/default.conf
+# install only production deps (includes express)
+COPY package*.json ./
+RUN npm ci --omit=dev
 
-EXPOSE 80
+# copy server + built site
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/server.js ./server.js
+
+ENV PORT=8080
+EXPOSE 8080
+
+CMD ["node", "server.js"]

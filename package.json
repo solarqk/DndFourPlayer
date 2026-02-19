@@ -8,9 +8,11 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build:k8s": "tsc -b && vite build --config vite.k8s.config.ts"
+    "build:k8s": "tsc -b && vite build --config vite.k8s.config.ts",
+    "start": "node server.js"
   },
   "dependencies": {
+    "express": "^5.2.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

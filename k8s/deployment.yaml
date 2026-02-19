@@ -14,7 +14,10 @@ spec:
     spec:
       containers:
         - name: web
-          image: dndfourplayer:1.0
+          image: dndfourplayer:2.0
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 80
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
