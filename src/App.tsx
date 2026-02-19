@@ -28,6 +28,10 @@ function PlayerCard({ state, playerId, title, dispatch }: PlayerCardProps) {
         </span>
       </div>
       <div className="statRow">
+        <span className="statLabel">AC</span>
+        <span className="statValue">{player.armorClass}</span>
+      </div>
+      <div className="statRow">
         <span className="statLabel">Turn</span>
         <span className={`statValue ${isActive ? "active" : ""}`}>
           {isActive ? "ACTIVE" : "—"}

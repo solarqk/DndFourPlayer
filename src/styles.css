@@ -58,14 +58,14 @@ html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text);
 .appShell2 {
   height: 100vh;
   display: grid;
-  grid-template-rows: 300px 1fr;
+  grid-template-rows: 325px 1fr;
   gap: 10px;
   padding: 10px;
 }
 
 .topStrip {
   display: grid;
-  grid-template-columns: 230px 1fr 260px; /* image | narration | enemy slot */
+  grid-template-columns: 300px 1fr 300px; /* image | narration | enemy slot */
   gap: 10px;
   min-height: 170px;
 }
@@ -207,7 +207,7 @@ html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text);
   grid-template-columns: repeat(2, 1fr);  /* 2 columns */
   grid-auto-rows: 1fr;                    /* equal height rows */
   gap: 8px;
-  height: 100%;                           /* fill card space */
+  height: 70%;                           /* fill card space */
 }
 
 .btnGrid .btn {
