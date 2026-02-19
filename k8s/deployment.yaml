@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dndfourplayer
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dndfourplayer
+  template:
+    metadata:
+      labels:
+        app: dndfourplayer
+    spec:
+      containers:
+        - name: web
+          image: dndfourplayer:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
