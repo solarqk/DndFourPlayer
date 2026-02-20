@@ -9,7 +9,7 @@ export function allPlayersChoseIntro(state: GameState): boolean {
 export function introNarration(state: GameState): string {
   const chosen = state.flags.introChoicesByPlayer;
   const lines: string[] = [
-    "You enter the Driftwood Mug—warm lanternlight, loud laughter, and the smell of fried onions.",
+    "You enter the Driftwood Mug. You are met by warm lanternlight, loud laughter, and the smell of fried onions.",
     "A storm taps the windows. Something about tonight feels… inevitable.",
     "",
     "Each of you chooses how to spend the first few minutes in the bar.",
@@ -41,7 +41,7 @@ export function combatNarration(state: GameState): string {
   const lr = state.lastRoll;
   const lines: string[] = [
     "Outside, boots splash through puddles. A figure steps into the doorway and scans the room.",
-    "A tense silence. Then—someone shoves a table aside.",
+    "A tense silence. Then, someone shoves a table aside.",
     "",
     `Combat has started. Enemy: ${state.enemy.name} (${state.enemy.hitsRemaining} hits remaining).`,
     `Armor Class (to hit): ${state.enemy.armorClass}.`,
@@ -87,7 +87,7 @@ export function outroNarration(state: GameState): string {
   const perks: string[] = [];
   if (keys.has("chat_bartender")) {
     perks.push(
-      "Because someone chatted up the bartender, you learn the bruiser was hired—badly—and by someone nervous.",
+      "Because someone chatted up the bartender, you learn the bruiser was hired by an old acquaintance with dubious intentions.",
     );
   }
   if (keys.has("inspect_noticeboard")) {
@@ -97,7 +97,7 @@ export function outroNarration(state: GameState): string {
   }
   if (keys.has("buy_round")) {
     perks.push(
-      "Because someone bought a round, a patron wordlessly points you toward a back exit—an easy way out.",
+      "Because someone bought a round, a patron wordlessly points you toward a back exit. An easy way out.",
     );
   }
   if (keys.has("intimidate_patron")) {
